@@ -10,19 +10,19 @@ fn day1_part2() {
     let lines: u32 = file
         .lines()
         .map(|line| {
-            println!("{:?}", line);
+            let digits = find_digits(line);
+            let first_digit = digits.first().unwrap().1;
+            let last_digit = digits.last().unwrap().1;
+            let final_number = join_digits(first_digit, last_digit);
 
-            let new_line = replace_word_with_digit(line);
-            println!("{:?}", new_line);
+            println!("-----");
+            println!("line: {:?}", line,);
+            println!("matches: {:?}", digits);
+            println!("first: {:?}, last: {:?}", first_digit, last_digit);
+            println!("final number: {:?}", final_number);
+            println!("-----");
 
-            let chars: Vec<char> = new_line.chars().filter(|ch| ch.is_digit(10)).collect();
-            println!("{:?}", chars);
-
-            let first_char = chars.first().unwrap().to_string();
-            let last_char = chars.last().unwrap().to_string();
-            println!("first: {:?}, last: {:?}", first_char, last_char);
-
-            let string_number = vec![first_char, last_char].join("");
+            let string_number = vec![first_digit, last_digit].join("");
             println!("{:?}", string_number);
 
             return string_number.parse::<u32>().unwrap();
@@ -32,39 +32,25 @@ fn day1_part2() {
     println!("{:?}", lines);
 }
 
-fn replace_word_with_digit(line: &str) -> String {
-    let mut new_string: String = line.into();
-
+fn find_digits(line: &str) -> Vec<(usize, &str)> {
     let items = vec![
-        "one", "1", "two", "2", "three", "3", "four", "4", "five", "5", "six", "6", "seven", "7",
-        "eight", "8", "nine", "9",
+        "1", "2", "3", "4", "5", "6", "7", "8", "9", "one", "two", "three", "four", "five", "six",
+        "seven", "eight", "nine",
     ];
 
-    let first = find_first(line, items);
-    println!("first: {:?}", first);
-
-    let reversed = line.chars().rev().collect::<String>();
-    let last = find_first(reversed.as_str(), items);
-    println!("last: {:?}", last);
-
-    return new_string;
-}
-
-fn find_first(line: &str, items: Vec<&str>) -> &str {
     let mut matches = vec![];
 
     for item in items.into_iter() {
-        match line.find(item) {
-            Some(idx) => matches.push((idx, replace_if_string(item))),
-            None => continue,
-        };
-    };
+        let res: Vec<_> = line.match_indices(item).collect();
 
-    println!("line: {:?}, matches: {:?}", line, matches);
+        for occurence in &res {
+            matches.push((occurence.0, replace_if_string(occurence.1)));
+        }
+    }
 
     matches.sort_by(|a, b| a.0.cmp(&b.0));
 
-    return matches.pop().unwrap().1;
+    return matches;
 }
 
 fn replace_if_string(found: &str) -> &str {
@@ -87,6 +73,11 @@ fn replace_if_string(found: &str) -> &str {
     }
 
     return found;
+}
+
+fn join_digits(first_digit: &str, last_digit: &str) -> u32 {
+    let string_number = vec![first_digit, last_digit].join("");
+    return string_number.parse::<u32>().unwrap();
 }
 
 fn day1_part1() {
