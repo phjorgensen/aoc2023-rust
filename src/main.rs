@@ -35,41 +35,58 @@ fn day1_part2() {
 fn replace_word_with_digit(line: &str) -> String {
     let mut new_string: String = line.into();
 
-    let first = find_first(line);
-    println!("{:?}", first);
-
-    // Can't reverse, because one will become eno.
-    let reversed = line.chars().rev().collect::<String>();
-    let last = find_first(reversed.as_str());
-    println!("{:?}", last);
-
-    return new_string;
-}
-
-fn find_first(line: &str) -> &str {
-    // Still does not find the first match in the word, just the first match in the items array.
     let items = vec![
         "one", "1", "two", "2", "three", "3", "four", "4", "five", "5", "six", "6", "seven", "7",
         "eight", "8", "nine", "9",
     ];
 
-    let mut found = false;
-    let mut found_item: &str = "";
+    let first = find_first(line, items);
+    println!("first: {:?}", first);
 
-    items.into_iter().for_each(|item| {
-        if found {
-            return;
+    let reversed = line.chars().rev().collect::<String>();
+    let last = find_first(reversed.as_str(), items);
+    println!("last: {:?}", last);
+
+    return new_string;
+}
+
+fn find_first(line: &str, items: Vec<&str>) -> &str {
+    let mut matches = vec![];
+
+    for item in items.into_iter() {
+        match line.find(item) {
+            Some(idx) => matches.push((idx, replace_if_string(item))),
+            None => continue,
+        };
+    };
+
+    println!("line: {:?}, matches: {:?}", line, matches);
+
+    matches.sort_by(|a, b| a.0.cmp(&b.0));
+
+    return matches.pop().unwrap().1;
+}
+
+fn replace_if_string(found: &str) -> &str {
+    let map = vec![
+        ("one", "1"),
+        ("two", "2"),
+        ("three", "3"),
+        ("four", "4"),
+        ("five", "5"),
+        ("six", "6"),
+        ("seven", "7"),
+        ("eight", "8"),
+        ("nine", "9"),
+    ];
+
+    for conversion in map {
+        if conversion.0 == found {
+            return conversion.1;
         }
+    }
 
-        let found_it = line.find(item).unwrap_or(1000);
-
-        if found_it != 1000 {
-            found = true;
-            found_item = item;
-        }
-    });
-
-    return found_item;
+    return found;
 }
 
 fn day1_part1() {
