@@ -10,6 +10,8 @@ fn main() {
     match (day.as_ref(), part.as_ref()) {
         ("1", "1") => days::day1::part1::main(debug),
         ("1", "2") => days::day1::part2::main(debug),
+        ("2", "1") => days::day2::part1::main(debug),
+        ("2", "2") => days::day2::part2::main(debug),
         _ => panic!("Day or part not found!"),
     };
 }
